@@ -7,6 +7,7 @@ var io = require('socket.io');
 const config = require('./config/config.json');
 const mongoose = require('mongoose');
 
+app.use('/resources', express.static('resources'))
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({"extended" : false}));
 mongoose.connect(config.db);
