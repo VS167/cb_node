@@ -30,6 +30,7 @@ module.exports = router => {
 		    var source = req.body.source;
 		    var message = req.body.header;
         var imageUrl = req.body.imageUrl;
+        var article = req.body._id;
 		    
 		    var registrationId = req.body.category;
 
