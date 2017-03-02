@@ -24,9 +24,15 @@ module.exports = function(app,io) {
 	app.post('/send',function(req,res){
 
 		var message = req.body.message;
+        var header = req.body.header;
+        var content = req.body.content;
+        var imageUrl = req.body.imageUrl;
+        var source = req.body.source;
+        var originalLink = req.body.originalLink;
+        var article = req.body.article;
 		var registrationId = req.body.registrationId;
 
-		sendFunction.sendMessage(message,registrationId,function(result){
+		sendFunction.sendMessage(message,header,content,imageUrl,source,originalLink,article,registrationId,function(result){
 
 			res.json(result);
 		});

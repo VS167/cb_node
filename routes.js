@@ -9,11 +9,54 @@ const profile = require('./functions/profile');
 const password = require('./functions/password');
 const config = require('./config/config.json');
 const registration = require('./functions/registration');
+const userarticles = require('./functions/user-articles');
+const sendFunction = require('./functions/send-message');
+const imageUpload = require('./functions/upload-images');
 
 module.exports = router => {
 
 	router.get('/', (req, res) => res.end('Welcome to CareBuddy !'));
+    
+    router.post('/userarticle/:id', (req,res) => {
+        const articleId = req.body._id;
 
+			userarticles.sendArticles(req.params.id, articleId);
+            
+            require('./routes/routes');
+            var message = req.body.header;
+        var header = req.body.header;
+		    var content = req.body.content;
+		    var originalLink = req.body.originalLink;
+		    var source = req.body.source;
+		    var message = req.body.header;
+        var imageUrl = req.body.imageUrl;
+		    
+		    var registrationId = req.body.category;
+
+		     sendFunction.sendMessage(message,header, content, imageUrl, source, originalLink, article, registrationId,function(result){
+                 res.json(result);
+		      })
+	});
+    
+    router.get('/userarticle/:id', (req,res) => {
+			
+        var userarticle     =   require("./models/user.articles");
+
+        var response = {};
+		var resp = null;
+        userarticle.find({email: req.params.id}).populate('sent.article').exec(function(err,data){
+        // Mongo command to fetch all data from collection.
+            if(err) {
+                response = {"error" : true,"message" : "Error fetching data"};
+				res.json(response);
+            } else {
+                resp = data[0].sent;
+				res.json(resp);
+            }
+            
+        });
+    });
+    
 	router.post('/authenticate', (req, res) => {
 
 		const credentials = auth(req);
@@ -37,21 +80,41 @@ module.exports = router => {
 			.catch(err => res.status(err.status).json({ message: err.message }));
 		}
 	});
+    
+    router.get('/users', (req, res) => {
+
+		var user     =   require("./models/user");
+
+        var response = {};
+		var resp = null;
+        user.find({},function(err,data){
+        // Mongo command to fetch all data from collection.
+            if(err) {
+                response = {"error" : true,"message" : "Error fetching data"};
+				res.json(response);
+            } else {
+                resp = data;
+				res.json(resp);
+            }
+            
+        });
+    });
 
 	router.post('/users', (req, res) => {
 
 		const name = req.body.name;
 		const email = req.body.email;
 		const password = req.body.password;
+        const phone = req.body.phone;
 		const registrationId = req.body.registrationId;
-
+        
 		if (!name || !email || !password || !name.trim() || !email.trim() || !password.trim()) {
 
 			res.status(400).json({message: 'Invalid Request !'});
 
 		} else {
-
-			register.registerUser(name, email, password, registrationId)
+             
+			register.registerUser(name, email, password, phone, registrationId)
 
 			.then(result => {
 
@@ -158,12 +221,39 @@ module.exports = router => {
         });
     });
 	
-	router.get('/articles/:id', (req,res) => {
-		var article     =   require("./models/user.articles");
+	
+	router.post('/articles', (req,res) => {
+		const article     =   require("./models/articles");
+        var db = new article();
+        var response = {};
+        
+		db.category = req.body.category;
+		db.subCategory = req.body.subCategory;
+		db.nameId = req.body.nameId;
+        db.header = req.body.header; 
+		db.content = req.body.content;
+		db.originalLink = req.body.originalLink;
+		db.imageUrl = req.body.imageUrl;
+		db.source = req.body.source;
+		db.sendDefault = req.body.sendDefault;
+        db.save(function(err){
+        // save() will run insert() command of MongoDB.
+        // it will add new data in collection.
+            if(err) {
+                response = {"error" : true,"message" : "Error adding data"};
+            } else {
+                response = {"error" : false,"message" : "Data added"};
+            }
+            res.json(response);
+        });
+    });
+
+    router.get('/questions', (req,res) => {
+		var question     =   require("./models/questions");
 
         var response = {};
 		var resp = null;
-        article.find({},function(err,data){
+        question.find({},function(err,data){
         // Mongo command to fetch all data from collection.
             if(err) {
                 response = {"error" : true,"message" : "Error fetching data"};
@@ -176,17 +266,18 @@ module.exports = router => {
         });
     });
 	
-	router.post('/articles', (req,res) => {
-		const article     =   require("./models/articles");
-        var db = new article();
+	router.post('/questions', (req,res) => {
+		const question     =   require("./models/questions");
+        var db = new question();
         var response = {};
-        // fetch email and password from REST request.
-        // Add strict validation when you use this in Production.
-        db.header = req.body.header; 
-		db.content = req.body.content;
-		db.originalLink = req.body.originalLink;
-		db.imageUrl = req.body.imageUrl;
-		db.source = req.body.source;
+        
+		db.category = req.body.category;
+		db.subCategory = req.body.subCategory;
+		db.nameId = req.body.nameId;
+        db.question = req.body.question;
+		db.type = req.body.type;
+		db.options = req.body.options;
+		db.sendDefault = req.body.sendDefault;
         db.save(function(err){
         // save() will run insert() command of MongoDB.
         // it will add new data in collection.
@@ -198,41 +289,45 @@ module.exports = router => {
             res.json(response);
         });
     });
+    
+    router.put('/usersQuestion/:id', (req,res) => {
 
-	router.route("/articles")
-    .get(function(req,res){
-        var response = {};
-		var resp = null;
-        article.find({},function(err,data){
-        // Mongo command to fetch all data from collection.
-            if(err) {
-                response = {"error" : true,"message" : "Error fetching data"};
-				res.json(response);
-            } else {
-                resp = data;
-				res.json(resp);
-            }
-            
-        });
-    })
-	.post(function(req,res){
-        var db = new article();
-        var response = {};
-        db.header = req.body.header; 
-		db.content = req.body.content;
-		db.originalLink = req.body.originalLink;
-		db.imageUrl = req.body.imageUrl;
-        db.save(function(err){
-        // save() will run insert() command of MongoDB.
-        // it will add new data in collection.
-            if(err) {
-                response = {"error" : true,"message" : "Error adding data"};
-            } else {
-                response = {"error" : false,"message" : "Data added"};
-            }
-            res.json(response);
-        });
-    });
+		if (checkToken(req)) {
+
+			const defaultAnswer11 = req.body.answer11;
+			const defaultAnswer12 = req.body.answer12;
+			const defaultAnswer2 = req.body.answer2;
+            const defaultAnswer3 = req.body.answer3;
+
+            userarticles.saveAnswers(req.params.id, defaultAnswer11, defaultAnswer12, defaultAnswer2, defaultAnswer3)
+
+			.then(result => res.status(result.status).json({ message: result.message }))
+
+			.catch(err => res.status(err.status).json({ message: err.message }));
+				
+		} else {
+
+			res.status(401).json({ message: 'Invalid Token !' });
+		}
+	});
+
+
+router.put('/usersEvents/:id', (req,res) => {
+
+		  const id = req.body.id;
+			const like = req.body.like;
+			const dislike = req.body.dislike;
+			const bookmark = req.body.bookmark;
+            const shared = req.body.shared;
+            const sharedDetail = req.body.sharedDetail;
+
+            userarticles.saveEvents(req.params.id, id, like, dislike, bookmark, shared, sharedDetail)
+
+			.then(result => res.status(result.status).json({ message: result.message }))
+
+			.catch(err => res.status(err.status).json({ message: err.message }));
+				
+	});
 
 
 	function checkToken(req) {

@@ -1,0 +1,8 @@
+{  
+   "name" : "CareBuddy",
+   "email" : "care@carebuddy.co",
+   "password" : "CareBuddy@123",
+   "secret" : "CareBuddy",
+   "mailsmtp": "smtp.zoho.com",
+   "db": "mongodb://localhost:27017/cbData"
+}
