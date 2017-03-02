@@ -22,7 +22,7 @@ mongoose.connect(config.db);
 
    var storage = multer.diskStorage({ //multers disk storage settings
         destination: function (req, file, cb) {
-            cb(null, './resources/');
+            cb(null, '/resources/');
         },
         filename: function (req, file, cb) {
             cb(null, file.originalname);
