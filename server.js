@@ -7,6 +7,7 @@ var io = require('socket.io');
 const config = require('./config/config.json');
 const mongoose = require('mongoose');
  var multer = require('multer');
+const fs = require('fs');
 
 app.all('/*', function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
@@ -14,7 +15,7 @@ app.all('/*', function (req, res, next) {
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   next();
 });
-app.use('/resources', express.static('resources'))
+app.use('/resources', express.static('resources'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({"extended" : false}));
 mongoose.connect(config.db);
@@ -22,7 +23,7 @@ mongoose.connect(config.db);
 
    var storage = multer.diskStorage({ //multers disk storage settings
         destination: function (req, file, cb) {
-            cb(null, '/resources/');
+            cb(null, './resources/');
         },
         filename: function (req, file, cb) {
             cb(null, file.originalname);

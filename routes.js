@@ -58,6 +58,30 @@ module.exports = router => {
         });
     });
     
+    router.get('/userbookmark/:id', (req,res) => {
+			
+        var userarticle     =   require("./models/user.articles");
+
+        var response = {};
+		var resp = [];
+        userarticle.find({email: req.params.id}).populate('sent.article').exec(function(err,data){
+        // Mongo command to fetch all data from collection.
+            if(err) {
+                response = {"error" : true,"message" : "Error fetching data"};
+				res.json(response);
+            } else {
+                var interimData = data[0].sent;
+                for(var i = 0; i<interimData.length; i++){
+                    if(interimData[i].bookmark == true){
+                        resp.push(interimData[i]);
+                    }
+                }
+				res.json(resp);
+            }
+            
+        });
+    });
+    
 	router.post('/authenticate', (req, res) => {
 
 		const credentials = auth(req);
@@ -126,6 +150,8 @@ module.exports = router => {
 			})
 
 			.catch(err => res.status(err.status).json({ message: err.message }));
+            
+            
 		}
 	});
 
