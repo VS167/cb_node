@@ -38,18 +38,22 @@ exports.registerUser = (name, email, password, phone, registrationId) =>
         this.getDefaultArticles()
         
         .then(defaultArt => {
+            if(defaultArt.length > 0){
             for(var i=0; i< defaultArt.length; i++){
              sent.article = defaultArt[i]._id;
                 sent.sentAt = new Date();
                 newUserArt.sent.push(sent);    
             };
-            return newUserArt;
+                return newUserArt;
+            }else{
+                reject({ status: 409, message: 'No Default Articles Present!' });
+            }
+                
         })
         
-        .then(newUserArt => {
+        .then(newUserArt =>      {
             newUser.save();
             newUserArt.save();
-        
         })
         
 		

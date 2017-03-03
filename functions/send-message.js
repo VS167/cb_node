@@ -10,12 +10,12 @@ exports.sendMessage = function(message,header, content, imageUrl, source, origin
 
 		if (err){
 
-			console.error(err);
+			//console.error(err);
 			callback(constants.error.msg_send_failure);
 
 		} else 	{
 
-			console.log(response);
+			//console.log(response);
 			callback(constants.success.msg_send_success);
 		}
 
