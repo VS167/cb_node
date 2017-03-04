@@ -4,5 +4,5 @@
    "password" : "CareBuddy@123",
    "secret" : "CareBuddy",
    "mailsmtp": "smtp.zoho.com",
-   "db": "mongodb://cb_data:careBuddy@ec2-54-173-205-235.compute-1.amazonaws.com:27017/cbData"
+   "db": "mongodb://cb_data:careBuddy@ec2-52-5-246-2.compute-1.amazonaws.com:27017/cbData"
 }
