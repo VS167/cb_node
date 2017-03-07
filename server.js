@@ -6,8 +6,9 @@ var port     = process.env.PORT || 3000;
 var io = require('socket.io');
 const config = require('./config/config.json');
 const mongoose = require('mongoose');
- var multer = require('multer');
+var multer = require('multer');
 const fs = require('fs');
+const scheduler = require('./functions/scheduler');
 
 app.all('/*', function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
@@ -50,6 +51,7 @@ mongoose.connect(config.db);
 //Then use route() to remove redundant code.
 var listen = app.listen(port);
 var socket = io.listen(listen);
+//scheduler.sartSchedule();
 require('./routes/routes')(app,socket);
 require('./routes')(router);
 app.use('/',router);

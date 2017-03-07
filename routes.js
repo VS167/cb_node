@@ -12,6 +12,7 @@ const registration = require('./functions/registration');
 const userarticles = require('./functions/user-articles');
 const sendFunction = require('./functions/send-message');
 const imageUpload = require('./functions/upload-images');
+const scheduler = require('./functions/scheduler');
 
 module.exports = router => {
 
@@ -39,6 +40,12 @@ module.exports = router => {
 		      })
 	});
     
+    router.post('/scheduleArticles/:id', (req,res) => {
+        var email = req.body.id;
+		     scheduler.scheduleArticles(req.params.id, req.body, function(result){
+                                    res.json(result);
+    })
+	});
     router.get('/userarticle/:id', (req,res) => {
 			
         var userarticle     =   require("./models/user.articles");
@@ -52,6 +59,25 @@ module.exports = router => {
 				res.json(response);
             } else {
                 resp = data[0].sent;
+				res.json(resp);
+            }
+            
+        });
+    });
+    
+    router.get('/userDetail/:id', (req,res) => {
+			
+        var userarticle     =   require("./models/user.articles");
+
+        var response = {};
+		var resp = null;
+        userarticle.find({email: req.params.id}).populate('sent.article').exec(function(err,data){
+        // Mongo command to fetch all data from collection.
+            if(err) {
+                response = {"error" : true,"message" : "Error fetching data"};
+				res.json(response);
+            } else {
+                resp = data;
 				res.json(resp);
             }
             
