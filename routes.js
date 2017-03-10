@@ -16,7 +16,17 @@ const scheduler = require('./functions/scheduler');
 
 module.exports = router => {
 
-	router.get('/', (req, res) => res.end('Welcome to CareBuddy !'));
+	
+    //router.get('/', (req, res) => res.end('Welcome to CareBuddy !'));
+    router.get('/date', (req, res) => {
+        var date = new Date();
+        console.log(date);
+        var parsedDate = new Date(Date.parse(date))
+        var newDate = new Date(parsedDate.getTime() + (1000 * 60 * 20))
+
+        console.log(newDate);
+        res.end('Welcome to CareBuddy !');
+    });
     
     router.post('/userarticle/:id', (req,res) => {
         const articleId = req.body._id;
@@ -49,7 +59,7 @@ module.exports = router => {
     router.get('/userarticle/:id', (req,res) => {
 			
         var userarticle     =   require("./models/user.articles");
-
+        var date = new Date();
         var response = {};
 		var resp = null;
         userarticle.find({email: req.params.id}).populate('sent.article').exec(function(err,data){

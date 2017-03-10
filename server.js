@@ -51,7 +51,7 @@ mongoose.connect(config.db);
 //Then use route() to remove redundant code.
 var listen = app.listen(port);
 var socket = io.listen(listen);
-//scheduler.sartSchedule();
+scheduler.sartSchedule();
 require('./routes/routes')(app,socket);
 require('./routes')(router);
 app.use('/',router);

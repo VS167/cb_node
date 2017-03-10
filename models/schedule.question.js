@@ -4,14 +4,14 @@ mongoose.Promise = global.Promise;
 // create instance of Schema
 var Schema =   mongoose.Schema;
 // create schema
-var scheduleSchema  = new Schema ({
+var scheduleQuesSchema  = new Schema ({
 	email: String,
 	registrationId: String,
-	article: {
+	question: {
 				type: mongoose.Schema.Types.ObjectId,
-				ref: 'articles'
+				ref: 'questions'
 			},
     sendAt: Date
 });
 // create model if not exists.
-module.exports = mongoose.model('schedule', scheduleSchema);
+module.exports = mongoose.model('scheduleQues', scheduleQuesSchema);

@@ -9,6 +9,11 @@ const sent = {article: '',
 			shared: false,
 			sharedDetail: ''};
 
+const scheduleArt = {
+    article:'',
+    sendAt: ''
+};
+
 
 exports.sendArticles = (email, articleId) => 
 
@@ -110,6 +115,76 @@ exports.saveEvents = (email, id, like, dislike, bookmark, shared, sharedDetail) 
                 }
                 
             }
+            
+		})
+        
+        .then(userarticle => resolve({ status: 200, message: 'Success' }))
+
+		.catch(err => reject({ status: 500, message: 'Internal Server Error !' }));
+
+	});
+
+exports.updateSchedules = (schedule) => 
+
+	new Promise((resolve,reject) => {
+
+		userarticle.find({email: schedule.email})
+
+		.then(article => {
+
+			if (article.length == 0) {
+
+				reject({ status: 404, message: 'User Not Found !' });
+
+			} else {
+
+				return article[0];
+				
+			}
+		})
+		
+		.then(userarticle => {
+            sent.article = schedule.article._id;
+                sent.sentAt = new Date();
+                userarticle.sent.push(sent);
+                return userarticle.save();
+            
+		})
+        
+        .then(userarticle => {
+            return userarticle.update({ $pull: { "schedule" : { article: schedule.article._id } } });
+        })
+        
+        .then(userarticle => resolve({ status: 200, message: 'Success' }))
+
+		.catch(err => reject({ status: 500, message: 'Internal Server Error !' }));
+
+	});
+
+exports.schedule = (schedule) => 
+
+	new Promise((resolve,reject) => {
+
+		userarticle.find({email: schedule.email})
+
+		.then(article => {
+
+			if (article.length == 0) {
+
+				reject({ status: 404, message: 'User Not Found !' });
+
+			} else {
+
+				return article[0];
+				
+			}
+		})
+		
+		.then(userarticle => {
+            scheduleArt.article = schedule.articleId;
+                scheduleArt.sendAt = new Date(schedule.date);
+                userarticle.schedule.push(scheduleArt);
+                return userarticle.save();
             
 		})
         
