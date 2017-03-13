@@ -9,6 +9,14 @@ const sent = {article: '',
 			shared: false,
 			sharedDetail: ''};
 
+const sentQues = {
+    question: '',
+			sentAt: '',
+			answered: false,
+            answeredAt: '',
+			answer: ''
+};
+
 const scheduleArt = {
     article:'',
     sendAt: ''
@@ -185,6 +193,80 @@ exports.schedule = (schedule) =>
                 scheduleArt.sendAt = new Date(schedule.date);
                 userarticle.schedule.push(scheduleArt);
                 return userarticle.save();
+            
+		})
+        
+        .then(userarticle => resolve({ status: 200, message: 'Success' }))
+
+		.catch(err => reject({ status: 500, message: 'Internal Server Error !' }));
+
+	});
+
+
+exports.sendQuestion = (email, quesId) => 
+
+	new Promise((resolve,reject) => {
+
+		userarticle.find({email: email})
+
+		.then(userarticle => {
+
+			if (userarticle.length == 0) {
+
+				reject({ status: 404, message: 'User Not Found !' });
+
+			} else {
+
+				return userarticle[0];
+				
+			}
+		})
+		
+		.then(userarticle => {
+            
+            sentQues.question = quesId;
+            sentQues.sentAt = new Date();
+            userarticle.questions.push(sentQues);
+            userarticle.save();
+		})
+        
+        .then(userarticle => resolve({ status: 200, message: 'Success' }))
+
+		.catch(err => reject({ status: 500, message: 'Internal Server Error !' }));
+
+	});
+
+exports.saveRecycleAnswers = (email, id, answer) => 
+
+	new Promise((resolve,reject) => {
+
+		userarticle.find({email: email})
+
+		.then(article => {
+
+			if (article.length == 0) {
+
+				reject({ status: 404, message: 'User Not Found !' });
+
+			} else {
+
+				return article[0];
+				
+			}
+		})
+		
+		.then(userarticle => {
+            
+            for(var i=0; i<userarticle.questions.length; i++){
+                if(userarticle.questions[i].question == id){
+                    userarticle.questions[i].answer = answer;
+                    userarticle.questions[i].answered = true;
+                    userarticle.questions[i].answeredAt = new Date();
+                    userarticle.save();
+                    break;
+                }
+                
+            }
             
 		})
         

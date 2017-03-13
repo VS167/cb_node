@@ -13,6 +13,7 @@ const userarticles = require('./functions/user-articles');
 const sendFunction = require('./functions/send-message');
 const imageUpload = require('./functions/upload-images');
 const scheduler = require('./functions/scheduler');
+const location = require('./functions/location');
 
 module.exports = router => {
 
@@ -88,6 +89,31 @@ module.exports = router => {
 				res.json(response);
             } else {
                 resp = data;
+				res.json(resp);
+            }
+            
+        });
+    });
+    
+    router.get('/userDetailApp/:id', (req,res) => {
+			
+        var userarticle     =   require("./models/user.articles");
+
+        var response = {};
+		var resp = null;
+        userarticle.find({email: req.params.id}).populate('sent.article').populate('questions.question').exec(function(err,data){
+        // Mongo command to fetch all data from collection.
+            if(err) {
+                response = {"error" : true,"message" : "Error fetching data"};
+				res.json(response);
+            } else {
+                for(var i = data[0].questions.length -1; i >= 0 ; i--){
+    if(data[0].questions[i].answered){
+        data[0].questions.splice(i, 1);
+    }
+}
+                resp = data;
+                
 				res.json(resp);
             }
             
@@ -310,6 +336,20 @@ module.exports = router => {
             res.json(response);
         });
     });
+    
+    router.post('/userLocation', (req,res) => {
+		const address = req.body.address;
+			const locality = req.body.locality;
+        const sub_locality = req.body.area;
+              const postal = req.body.postal;
+			const country = req.body.country;
+            location.saveLocation(req.params.id, address, locality, sub_locality, postal, country)
+
+			.then(result => res.status(result.status).json({ message: result.message }))
+
+			.catch(err => res.status(err.status).json({ message: err.message }));
+		
+    });
 
     router.get('/questions', (req,res) => {
 		var question     =   require("./models/questions");
@@ -373,6 +413,16 @@ module.exports = router => {
 			res.status(401).json({ message: 'Invalid Token !' });
 		}
 	});
+    
+    router.post('/userquestion/:id', (req,res) => {
+        const quesId = req.body._id;
+
+			userarticles.sendQuestion(req.params.id, quesId)
+            .then(result => res.status(result.status).json({ message: result.message }))
+
+			.catch(err => res.status(err.status).json({ message: err.message }));
+            
+    });
 
 
 router.put('/usersEvents/:id', (req,res) => {
@@ -385,6 +435,19 @@ router.put('/usersEvents/:id', (req,res) => {
             const sharedDetail = req.body.sharedDetail;
 
             userarticles.saveEvents(req.params.id, id, like, dislike, bookmark, shared, sharedDetail)
+
+			.then(result => res.status(result.status).json({ message: result.message }))
+
+			.catch(err => res.status(err.status).json({ message: err.message }));
+				
+	});
+
+router.put('/userAnswers/:id', (req,res) => {
+
+		  const id = req.body.id;
+			const answer = req.body.answer;
+			
+            userarticles.saveRecycleAnswers(req.params.id, id, answer)
 
 			.then(result => res.status(result.status).json({ message: result.message }))
 
