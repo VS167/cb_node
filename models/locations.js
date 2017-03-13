@@ -12,7 +12,8 @@ const locationSchema = new Schema({
 	sub_locality	: String,
     country         : String,
 	postal         	: String,
-    state           : String
+    state           : String,
+    record_date     : Date
 });
 
 mongoose.Promise = global.Promise;

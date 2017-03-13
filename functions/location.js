@@ -14,7 +14,8 @@ exports.saveLocation = (email, address, locality, sub_locality, postal, country,
 	sub_locality	: sub_locality,
     country         : country,
 	postal         	: postal,
-    state           : state
+    state           : state,
+        record_date: new Date()
 
 		});
         l.save()
