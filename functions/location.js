@@ -2,7 +2,7 @@
 
 const location = require('../models/locations');
 
-exports.saveLocation = (email, address, locality, sub_locality, postal, country) => 
+exports.saveLocation = (email, address, locality, sub_locality, postal, country, state) => 
 
 	new Promise((resolve,reject) => {
         
@@ -13,7 +13,8 @@ exports.saveLocation = (email, address, locality, sub_locality, postal, country)
 	locality    	: locality,
 	sub_locality	: sub_locality,
     country         : country,
-	postal         	: postal
+	postal         	: postal,
+    state           : state
 
 		});
         l.save()

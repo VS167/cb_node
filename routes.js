@@ -337,13 +337,14 @@ module.exports = router => {
         });
     });
     
-    router.post('/userLocation', (req,res) => {
+    router.post('/userLocation/:id', (req,res) => {
 		const address = req.body.address;
 			const locality = req.body.locality;
         const sub_locality = req.body.area;
               const postal = req.body.postal;
+        const state = req.body.state;
 			const country = req.body.country;
-            location.saveLocation(req.params.id, address, locality, sub_locality, postal, country)
+            location.saveLocation(req.params.id, address, locality, sub_locality, postal, country, state)
 
 			.then(result => res.status(result.status).json({ message: result.message }))
 

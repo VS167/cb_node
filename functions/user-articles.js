@@ -81,7 +81,7 @@ exports.saveAnswers = (email, defaultAnswer11, defaultAnswer12, defaultAnswer2, 
             userarticle.defaultAnswer12 = defaultAnswer12;
             userarticle.defaultAnswer2 = defaultAnswer2;
             userarticle.defaultAnswer3 = defaultAnswer3;
-            userarticle.save();
+            userarticle.save()
 		})
         
         .then(userarticle => resolve({ status: 200, message: 'Success' }))
