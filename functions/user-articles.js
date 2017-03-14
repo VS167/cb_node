@@ -22,6 +22,11 @@ const scheduleArt = {
     sendAt: ''
 };
 
+const scheduleQues = {
+    question:'',
+    sendAt: ''
+};
+
 
 exports.sendArticles = (email, articleId) => 
 
@@ -169,6 +174,42 @@ exports.updateSchedules = (schedule) =>
 
 	});
 
+exports.updateSchedulesQuestion = (schedule) => 
+
+	new Promise((resolve,reject) => {
+
+		userarticle.find({email: schedule.email})
+
+		.then(article => {
+
+			if (article.length == 0) {
+
+				reject({ status: 404, message: 'User Not Found !' });
+
+			} else {
+
+				return article[0];
+				
+			}
+		})
+		
+		.then(userarticle => {
+            sentQues.question = schedule.question._id;
+            sentQues.sentAt = new Date();
+            userarticle.questions.push(sentQues);
+            userarticle.save(); 
+		})
+        
+        .then(userarticle => {
+            return userarticle.update({ $pull: { "questionschedule" : { question: schedule.question._id } } });
+        })
+        
+        .then(userarticle => resolve({ status: 200, message: 'Success' }))
+
+		.catch(err => reject({ status: 500, message: 'Internal Server Error !' }));
+
+	});
+
 exports.schedule = (schedule) => 
 
 	new Promise((resolve,reject) => {
@@ -192,6 +233,40 @@ exports.schedule = (schedule) =>
             scheduleArt.article = schedule.articleId;
                 scheduleArt.sendAt = new Date(schedule.date);
                 userarticle.schedule.push(scheduleArt);
+                return userarticle.save();
+            
+		})
+        
+        .then(userarticle => resolve({ status: 200, message: 'Success' }))
+
+		.catch(err => reject({ status: 500, message: 'Internal Server Error !' }));
+
+	});
+
+
+exports.scheduleQuestion = (schedule) => 
+
+	new Promise((resolve,reject) => {
+
+		userarticle.find({email: schedule.email})
+
+		.then(article => {
+
+			if (article.length == 0) {
+
+				reject({ status: 404, message: 'User Not Found !' });
+
+			} else {
+
+				return article[0];
+				
+			}
+		})
+		
+		.then(userarticle => {
+            scheduleQues.question = schedule.questionId;
+                scheduleQues.sendAt = new Date(schedule.date);
+                userarticle.schedule.push(scheduleQues);
                 return userarticle.save();
             
 		})

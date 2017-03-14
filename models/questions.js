@@ -10,7 +10,7 @@ var questionSchema  = new Schema ({
 	subCategory: String,
     type: String,
 	question : String,
-    sendDefault: String,
+    sendDefault: Boolean,
     options:[{
         option: String
     }]

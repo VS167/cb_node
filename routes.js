@@ -14,6 +14,8 @@ const sendFunction = require('./functions/send-message');
 const imageUpload = require('./functions/upload-images');
 const scheduler = require('./functions/scheduler');
 const location = require('./functions/location');
+const articleDetail = require('./functions/article-detail');
+const questionDetail = require('./functions/question-detail');
 
 module.exports = router => {
 
@@ -308,6 +310,51 @@ module.exports = router => {
             }
             
         });
+    });
+	
+    
+	router.post('/articlesEdit/:id', (req,res) => {
+        
+        var category = req.body.category;
+		var subCategory = req.body.subCategory;
+		var nameId = req.body.nameId;
+        var header = req.body.header; 
+		var content = req.body.content;
+		var originalLink = req.body.originalLink;
+		var imageUrl = req.body.imageUrl;
+		var source = req.body.source;
+		var sendDefault = req.body.sendDefault;
+        
+        articleDetail.editArticle(req.params.id, category, subCategory,nameId, header,content, originalLink, imageUrl, source, sendDefault)
+
+			.then(result => {
+				res.status(result.status).json({ message: result.message });
+
+			})
+
+			.catch(err => res.status(err.status).json({ message: err.message }));
+		
+    });
+    
+    router.post('/questionsEdit/:id', (req,res) => {
+        
+        var category = req.body.category;
+		var subCategory = req.body.subCategory;
+		var nameId = req.body.nameId;
+        var question = req.body.question; 
+		var type = req.body.type;
+		var options = req.body.options;
+		var sendDefault = req.body.sendDefault;
+        
+        questionDetail.editQuestion(req.params.id, category, subCategory,nameId, question, type, options, sendDefault)
+
+			.then(result => {
+				res.status(result.status).json({ message: result.message });
+
+			})
+
+			.catch(err => res.status(err.status).json({ message: err.message }));
+		
     });
 	
 	
