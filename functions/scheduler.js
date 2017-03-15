@@ -97,7 +97,7 @@ exports.scheduleArticles = function(email, completeJson, callback) {
 			email: testSchedule.email,
 	registrationId: testSchedule.registrationId,
 	article: testSchedule.articleId,
-    sendAt: new Date(testSchedule.date)
+    sendAt: testSchedule.date
 
 		});
              newSchedule.save();
@@ -108,7 +108,7 @@ exports.scheduleArticles = function(email, completeJson, callback) {
 			email: testSchedule.email,
 	registrationId: testSchedule.registrationId,
 	    question: testSchedule.questionId,
-    sendAt: new Date(testSchedule.date)
+    sendAt: testSchedule.date
 
 		});
              newSchedule.save();
