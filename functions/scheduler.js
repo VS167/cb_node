@@ -91,6 +91,8 @@ exports.scheduleArticles = function(email, completeJson, callback) {
             tryDate.utcOffset(-330);
         }
         testSchedule.date = tryDate.format();
+        testSchedule.date = testSchedule.date.substring(0,testSchedule.date.lastIndexOf('-'));
+        testSchedule.date = testSchedule.date + ('Z');
         if(testSchedule.questionId == ''){
         var newSchedule = new sched({
 
