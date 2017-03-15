@@ -75,12 +75,22 @@ exports.scheduleArticles = function(email, completeJson, callback) {
     for(var i=0; i<completeJson.length; i++){
         var testSchedule =  completeJson[i];
         var tDate = testSchedule.date;
+        var moment = require('moment');
+         var cDate = '';
+        var timeZ = '';
         if(tDate.indexOf('(') != -1){
             var cDate = tDate.substring(0,tDate.indexOf('(')) + tDate.substring(tDate.indexOf(')')+1);
         var timeZ = tDate.substring(tDate.indexOf('(')+1, tDate.indexOf(')'));
         testSchedule.date = cDate;
         }
-    
+        
+        var tryDate = moment.utc(testSchedule.date);
+        if(timeZ == 'India Standard Time'){
+            tryDate.utcOffset(+330);
+        }else{
+            tryDate.utcOffset(+330);
+        }
+        testSchedule.date = tryDate.format();
         if(testSchedule.questionId == ''){
         var newSchedule = new sched({
 
