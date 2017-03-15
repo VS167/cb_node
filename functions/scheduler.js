@@ -84,11 +84,11 @@ exports.scheduleArticles = function(email, completeJson, callback) {
         testSchedule.date = cDate;
         }
         
-        var tryDate = moment.utc(testSchedule.date);
+        var tryDate = moment(testSchedule.date);
         if(timeZ == 'India Standard Time'){
-            tryDate.utcOffset(+330);
+            tryDate.utcOffset(-330);
         }else{
-            tryDate.utcOffset(+330);
+            tryDate.utcOffset(-330);
         }
         testSchedule.date = tryDate.format();
         if(testSchedule.questionId == ''){
