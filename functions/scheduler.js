@@ -75,7 +75,7 @@ exports.scheduleArticles = function(email, completeJson, callback) {
     for(var i=0; i<completeJson.length; i++){
         var testSchedule =  completeJson[i];
         var tDate = testSchedule.date;
-        var moment = require('moment');
+        var moment = require('moment-timezone');
          var cDate = '';
         var timeZ = '';
         if(tDate.indexOf('(') != -1){
@@ -84,7 +84,7 @@ exports.scheduleArticles = function(email, completeJson, callback) {
         testSchedule.date = cDate;
         }
         
-        var tryDate = moment(testSchedule.date);
+        var tryDate = moment.utc(testSchedule.date);
         if(timeZ == 'India Standard Time'){
             tryDate.utcOffset(-330);
         }else{
