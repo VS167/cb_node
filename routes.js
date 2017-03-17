@@ -80,7 +80,7 @@ module.exports = router => {
     
     router.get('/userDetail/:id', (req,res) => {
 			
-        var userarticle     =   require("./models/user.articles");
+        /*var userarticle     =   require("./models/user.articles");
 
         var response = {};
 		var resp = null;
@@ -94,7 +94,16 @@ module.exports = router => {
 				res.json(resp);
             }
             
-        });
+        });*/
+        
+        articleDetail.fetchDetails(req.params.id)
+
+			.then(result => {
+            res.json(result);
+                            })
+
+			.catch(err => res.status(err.status).json({ message: err.message }));
+		
     });
     
     router.get('/userDetailApp/:id', (req,res) => {
