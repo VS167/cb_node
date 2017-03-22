@@ -16,6 +16,7 @@ const scheduler = require('./functions/scheduler');
 const location = require('./functions/location');
 const articleDetail = require('./functions/article-detail');
 const questionDetail = require('./functions/question-detail');
+const userComment = require('./functions/user-comments');
 
 module.exports = router => {
 
@@ -76,6 +77,32 @@ module.exports = router => {
             }
             
         });
+    });
+    
+    
+    router.get('/userComment/:id', (req,res) => {
+			 
+        userComment.fetchDetails(req.params.id)
+
+			.then(result => {
+            res.json(result);
+                            })
+
+			.catch(err => res.status(err.status).json({ message: err.message }));
+		
+    });
+    
+     router.post('/userComment/:id', (req,res) => {
+			 
+         var comments = req.body.comments
+        userComment.saveDetails(req.params.id, comments)
+
+			.then(result => {
+            res.json(result);
+                            })
+
+			.catch(err => res.status(err.status).json({ message: err.message }));
+		
     });
     
     router.get('/userDetail/:id', (req,res) => {

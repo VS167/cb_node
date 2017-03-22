@@ -52,7 +52,22 @@ new Promise((resolve,reject) => {
   const fetchResponse = {
     'articles': [],
       'questions':  [],
-      'userdetail': []
+      'userdetail': [],
+      'mergeList': [],
+      'networkList': [],
+      'articledetails': [],
+      'articlelabels': ['Total Sent', 'Liked', 'Disliked', 'Bookmarked'],
+	  'series': ['Series A'],
+      'likebycatdata': [],
+	 'likelables': [],
+	 'likebysubdata': [],
+	 'likesublables': [],
+	 'dislikebycatdata': [],
+	 'dislikelables': [],
+	 'dislikebysubdata': [],
+	 'dislikesublables': [],
+	 'bookmark': [],
+	 'bookmarklabels': []
 };
     
     function holdArticle(){
@@ -145,7 +160,119 @@ new Promise((resolve,reject) => {
             
         };
         
-                                      resolve(fetchResponse);
+		var like = 0;
+		var dislike = 0;
+		var bookmark = 0;
+		var total = 0;
+        function holdCategoryDummy() {
+		
+	   };
+	   function holdSubCatDummy() {
+		
+	   };
+        var HashMap = require('hashmap');
+	   var categoryDetailDummy = new HashMap();
+	   var subCatDetailDummy = new HashMap();
+	
+        var addThisCat = true;
+        var addThisSubCat = true;
+		
+		
+    
+        //Merge Arrays - Start
+        var articleLength = fetchResponse.userdetail[0].sent.length;
+        var questionLength = fetchResponse.userdetail[0].questions.length;
+        var holdQuesLength = 0;
+        for (var i=0; i< articleLength; i++){
+            if(holdQuesLength < questionLength){
+          if  (new Date(fetchResponse.userdetail[0].sent[i].sentAt) < new Date(fetchResponse.userdetail[0].questions[holdQuesLength].sentAt)) {
+              fetchResponse.mergeList.push(fetchResponse.userdetail[0].sent[i]);
+              fetchResponse.networkList.push(fetchResponse.userdetail[0].sent[i]);
+          }else{
+              fetchResponse.mergeList.push(fetchResponse.userdetail[0].questions[holdQuesLength]);
+              fetchResponse.networkList.push(fetchResponse.userdetail[0].questions[holdQuesLength]);
+              fetchResponse.mergeList.push(fetchResponse.userdetail[0].sent[i]);
+              fetchResponse.networkList.push(fetchResponse.userdetail[0].sent[i]);
+              holdQuesLength++;
+          }
+        }else{
+                fetchResponse.mergeList.push(fetchResponse.userdetail[0].sent[i]);
+              fetchResponse.networkList.push(fetchResponse.userdetail[0].sent[i]);
+            }
+            
+            
+            if ( fetchResponse.userdetail[0].sent[i].like) {
+				like++;
+                if(categoryDetailDummy.has(fetchResponse.userdetail[0].sent[i].article.category)){
+                    categoryDetailDummy.get(fetchResponse.userdetail[0].sent[i].article.category).like++;
+                }else{
+                    categoryDetailDummy.set(fetchResponse.userdetail[0].sent[i].article.category, {'like': 1, 'dislike': 0, 'bookmark': 0});
+                };
+                if(subCatDetailDummy.has(fetchResponse.userdetail[0].sent[i].subCategory)){
+                    subCatDetailDummy.get(fetchResponse.userdetail[0].sent[i].article.subCategory).like++;
+                }else{
+                    subCatDetailDummy.set(fetchResponse.userdetail[0].sent[i].article.subCategory, {'like': 1, 'dislike': 0, 'bookmark': 0});
+                };
+			};
+			if ( fetchResponse.userdetail[0].sent[i].dislike) {
+				dislike++;
+                if(categoryDetailDummy.has(fetchResponse.userdetail[0].sent[i].article.category)){
+                    categoryDetailDummy.get(fetchResponse.userdetail[0].sent[i].article.category).dislike++;
+                }else{
+                    categoryDetailDummy.set(fetchResponse.userdetail[0].sent[i].article.category, {'like': 0, 'dislike': 1, 'bookmark': 0});
+                };
+                if(subCatDetailDummy.has(fetchResponse.userdetail[0].sent[i].article.subCategory)){
+                    subCatDetailDummy.get(fetchResponse.userdetail[0].sent[i].article.subCategory).dislike++;
+                }else{
+                    subCatDetailDummy.set(fetchResponse.userdetail[0].sent[i].article.subCategory, {'like': 0, 'dislike': 1, 'bookmark': 0});
+                };
+			};
+			if ( fetchResponse.userdetail[0].sent[i].bookmark) {
+				bookmark++
+                if(categoryDetailDummy.has( fetchResponse.userdetail[0].sent[i].article.category)){
+                    categoryDetailDummy.get(fetchResponse.userdetail[0].sent[i].article.category).bookmark++;
+                }else{
+                    categoryDetailDummy.set(fetchResponse.userdetail[0].sent[i].article.category, {'like': 0, 'dislike': 0, 'bookmark': 1});
+                };
+                if(subCatDetailDummy.has(fetchResponse.userdetail[0].sent[i].article.subCategory)){
+                    subCatDetailDummy.get(fetchResponse.userdetail[0].sent[i].article.subCategory).bookmark++;
+                }else{
+                    subCatDetailDummy.set(fetchResponse.userdetail[0].sent[i].article.subCategory, {'like': 0, 'dislike': 0, 'bookmark': 1});
+                };
+			};
+			total++;
+            };
+        
+        if(holdQuesLength<questionLength){
+            for (var i=holdQuesLength; i< questionLength; i++){
+                fetchResponse.mergeList.push(fetchResponse.userdetail[0].questions[i]);
+              fetchResponse.networkList.push(fetchResponse.userdetail[0].questions[i]);
+              
+            };
+        };
+        
+        fetchResponse.articledetails.push(total);
+        fetchResponse.articledetails.push(like);
+        fetchResponse.articledetails.push(dislike);
+        fetchResponse.articledetails.push(bookmark);
+        categoryDetailDummy.forEach(function(value, key){
+            fetchResponse.likelables.push(key);
+				fetchResponse.likebycatdata.push(value.like);
+				fetchResponse.dislikelables.push(key);
+				fetchResponse.dislikebycatdata.push(value.dislike);
+				fetchResponse.bookmarklabels.push(key);
+				fetchResponse.bookmark.push(value.bookmark);
+            
+        });
+        subCatDetailDummy.forEach(function(value, key){
+            fetchResponse.likesublables.push(key);
+				fetchResponse.likebysubdata.push(value.like);
+				fetchResponse.dislikesublables.push(key);
+				fetchResponse.dislikebysubdata.push(value.dislike);
+        });
+        
+		//Merge Arrays - Ends
+         resolve(fetchResponse);
 }, reason => {
      reject(reason);
 });
