@@ -2,7 +2,7 @@
 
 const questionModel = require('../models/questions');
 
-exports.editQuestion = (id, category, subCategory,nameId, questionD, type, options, sendDefault) => 
+exports.editQuestion = (id, category, subCategory,nameId, questionD, type, options, sendDefault) =>
 
 	new Promise((resolve,reject) => {
 
@@ -31,11 +31,9 @@ exports.editQuestion = (id, category, subCategory,nameId, questionD, type, optio
             question.sendDefault = sendDefault;
             question.save()
 		})
-        
+
         .then(question => resolve({ status: 200, message: 'Success' }))
 
 		.catch(err => reject({ status: 500, message: 'Internal Server Error !' }));
 
 	});
-
-	
