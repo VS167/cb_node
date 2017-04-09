@@ -11,6 +11,10 @@ var scheduleSchema  = new Schema ({
 				type: mongoose.Schema.Types.ObjectId,
 				ref: 'articles'
 			},
+			notify:  {
+    type: Boolean,
+    default: false
+	},
     sendAt: Date
 });
 // create model if not exists.

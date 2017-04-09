@@ -6,7 +6,7 @@ var constants = require('../constants/constants.json');
 
 exports.sartSchedule = function() {
     var schedule = require('node-schedule');
- 
+
     var job = schedule.scheduleJob('*/15 * * * *', function(){
         var schedule = require('../models/schedule');
         var userArticle = require('./user-articles');
@@ -14,7 +14,7 @@ exports.sartSchedule = function() {
          var date = new Date();
         var parsedDate = new Date(Date.parse(date));
         var newDate = new Date(parsedDate.getTime() + (1000 * 60 * 20));
-        var response = {};    
+        var response = {};
         schedule.find({"sendAt": {"$lte": newDate}}).populate('article').exec(function(err,data){
         // Mongo command to fetch all data from collection.
             if(err) {
@@ -23,10 +23,12 @@ exports.sartSchedule = function() {
             } else {
                 var sendFunction = require('./send-message');
                 for(var i=0; i<data.length; i++){
+                  if(data[i].notify){
                 sendFunction.sendMessage(data[i].article.header,data[i].article.header, data[i].article.content, data[i].article.imageUrl, data[i].article.source, data[i].article.originalLink, data[i].article.article, data[i].registrationId,function(result){
                     console.log(result);
                 });
-                    
+              }
+
                 schedule.remove({'_id': data[i]._id}, function(err1){
                 if(err1) {
                 response = {"error" : true,"message" : "Error deleting data"};
@@ -34,15 +36,15 @@ exports.sartSchedule = function() {
                 response = {"error" : false,"message" : "Deleted"};
             }
                     });
-                    
+
             userArticle.updateSchedules(data[i], function(res, err){
-                        
+
                     });
-    
+
                 };
             };
         });
-        
+
         scheduleQuestion.find({"sendAt": {"$lte": newDate}}).populate('question').exec(function(err,data){
         // Mongo command to fetch all data from collection.
             if(err) {
@@ -57,21 +59,21 @@ exports.sartSchedule = function() {
                 response = {"error" : false,"message" : "Deleted"};
             }
                     });
-                    
+
             userArticle.updateSchedulesQuestion(data[i], function(res, err){
-                        
+
                     });
-    
+
                 };
             };
         });
     });
 };
-                                   
+
 exports.scheduleArticles = function(email, completeJson, callback) {
      var email = email;
     var userArticle = require('./user-articles');
-    
+
     for(var i=0; i<completeJson.length; i++){
         var testSchedule =  completeJson[i];
         var tDate = testSchedule.date;
@@ -83,7 +85,7 @@ exports.scheduleArticles = function(email, completeJson, callback) {
         var timeZ = tDate.substring(tDate.indexOf('(')+1, tDate.indexOf(')'));
         testSchedule.date = cDate;
         }
-        
+
         var tryDate = moment.utc(testSchedule.date);
         if(timeZ == 'India Standard Time'){
             tryDate.utcOffset(-330);
@@ -99,6 +101,7 @@ exports.scheduleArticles = function(email, completeJson, callback) {
 			email: testSchedule.email,
 	registrationId: testSchedule.registrationId,
 	article: testSchedule.articleId,
+  notify: testSchedule.notify,
     sendAt: testSchedule.date
 
 		});
@@ -116,7 +119,7 @@ exports.scheduleArticles = function(email, completeJson, callback) {
              newSchedule.save();
             userArticle.scheduleQuestion(testSchedule);
         };
-       
+
     }
     callback(email);
 };

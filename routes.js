@@ -20,7 +20,7 @@ const userComment = require('./functions/user-comments');
 
 module.exports = router => {
 
-	
+
     //router.get('/', (req, res) => res.end('Welcome to CareBuddy !'));
     router.get('/date', (req, res) => {
         var date = new Date();
@@ -31,29 +31,41 @@ module.exports = router => {
         console.log(newDate);
         res.end('Welcome to CareBuddy !');
     });
-    
+
     router.post('/userarticle/:id', (req,res) => {
         const articleId = req.body._id;
 
-			userarticles.sendArticles(req.params.id, articleId);
-            
-            require('./routes/routes');
-            var message = req.body.header;
-        var header = req.body.header;
-		    var content = req.body.content;
-		    var originalLink = req.body.originalLink;
-		    var source = req.body.source;
-		    var message = req.body.header;
-        var imageUrl = req.body.imageUrl;
-        var article = req.body._id;
-		    
-		    var registrationId = req.body.category;
+			userarticles.sendArticles(req.params.id, articleId)
+			.then(result => {
+            res.json(result);
+                            })
 
-		     sendFunction.sendMessage(message,header, content, imageUrl, source, originalLink, article, registrationId,function(result){
-                 res.json(result);
-		      })
+			.catch(err => res.status(err.status).json({ message: err.message }));
+
 	});
-    
+
+	router.post('/userarticleNotify/:id', (req,res) => {
+			const articleId = req.body._id;
+
+		userarticles.sendArticles(req.params.id, articleId);
+
+					require('./routes/routes');
+					var message = req.body.header;
+			var header = req.body.header;
+			var content = req.body.content;
+			var originalLink = req.body.originalLink;
+			var source = req.body.source;
+			var message = req.body.header;
+			var imageUrl = req.body.imageUrl;
+			var article = req.body._id;
+
+			var registrationId = req.body.category;
+
+			 sendFunction.sendMessage(message,header, content, imageUrl, source, originalLink, article, registrationId,function(result){
+							 res.json(result);
+				})
+});
+
     router.post('/scheduleArticles/:id', (req,res) => {
         var email = req.body.id;
 		     scheduler.scheduleArticles(req.params.id, req.body, function(result){
@@ -61,7 +73,7 @@ module.exports = router => {
     })
 	});
     router.get('/userarticle/:id', (req,res) => {
-			
+
         var userarticle     =   require("./models/user.articles");
         var date = new Date();
         var response = {};
@@ -75,13 +87,13 @@ module.exports = router => {
                 resp = data[0].sent;
 				res.json(resp);
             }
-            
+
         });
     });
-    
-    
+
+
     router.get('/userComment/:id', (req,res) => {
-			 
+
         userComment.fetchDetails(req.params.id)
 
 			.then(result => {
@@ -89,11 +101,11 @@ module.exports = router => {
                             })
 
 			.catch(err => res.status(err.status).json({ message: err.message }));
-		
+
     });
-    
+
      router.post('/userComment/:id', (req,res) => {
-			 
+
          var comments = req.body.comments
         userComment.saveDetails(req.params.id, comments)
 
@@ -102,11 +114,11 @@ module.exports = router => {
                             })
 
 			.catch(err => res.status(err.status).json({ message: err.message }));
-		
+
     });
-    
+
     router.get('/userDetail/:id', (req,res) => {
-			
+
         /*var userarticle     =   require("./models/user.articles");
 
         var response = {};
@@ -120,9 +132,9 @@ module.exports = router => {
                 resp = data;
 				res.json(resp);
             }
-            
+
         });*/
-        
+
         articleDetail.fetchDetails(req.params.id)
 
 			.then(result => {
@@ -130,11 +142,11 @@ module.exports = router => {
                             })
 
 			.catch(err => res.status(err.status).json({ message: err.message }));
-		
+
     });
-    
+
     router.get('/userDetailApp/:id', (req,res) => {
-			
+
         var userarticle     =   require("./models/user.articles");
 
         var response = {};
@@ -151,15 +163,15 @@ module.exports = router => {
     }
 }
                 resp = data;
-                
+
 				res.json(resp);
             }
-            
+
         });
     });
-    
+
     router.get('/userbookmark/:id', (req,res) => {
-			
+
         var userarticle     =   require("./models/user.articles");
 
         var response = {};
@@ -178,10 +190,10 @@ module.exports = router => {
                 }
 				res.json(resp);
             }
-            
+
         });
     });
-    
+
 	router.post('/authenticate', (req, res) => {
 
 		const credentials = auth(req);
@@ -197,7 +209,7 @@ module.exports = router => {
 			.then(result => {
 
 				const token = jwt.sign(result, config.secret);
-			
+
 				res.status(result.status).json({ message: result.message, token: token });
 
 			})
@@ -205,7 +217,7 @@ module.exports = router => {
 			.catch(err => res.status(err.status).json({ message: err.message }));
 		}
 	});
-    
+
     router.get('/users', (req, res) => {
 
 		var user     =   require("./models/user");
@@ -221,7 +233,7 @@ module.exports = router => {
                 resp = data;
 				res.json(resp);
             }
-            
+
         });
     });
 
@@ -232,26 +244,26 @@ module.exports = router => {
 		const password = req.body.password;
         const phone = req.body.phone;
 		const registrationId = req.body.registrationId;
-        
+
 		if (!name || !email || !password || !name.trim() || !email.trim() || !password.trim()) {
 
 			res.status(400).json({message: 'Invalid Request !'});
 
 		} else {
-             
+
 			register.registerUser(name, email, password, phone, registrationId)
 
 			.then(result => {
 
 				const token = jwt.sign(result, config.secret);
-			
+
 				res.status(result.status).json({ message: result.message, token: token });
 
 			})
 
 			.catch(err => res.status(err.status).json({ message: err.message }));
-            
-            
+
+
 		}
 	});
 
@@ -284,7 +296,7 @@ module.exports = router => {
 				res.status(400).json({ message: 'Invalid Request !' });
 
 			} else {
-				
+
 				if(registrationId){
 					registration.changeRegId(req.params.id, registrationId)
 
@@ -329,7 +341,7 @@ module.exports = router => {
 			.catch(err => res.status(err.status).json({ message: err.message }));
 		}
 	});
-	
+
 	router.get('/articles', (req,res) => {
 		var article     =   require("./models/articles");
 
@@ -344,23 +356,23 @@ module.exports = router => {
                 resp = data;
 				res.json(resp);
             }
-            
+
         });
     });
-	
-    
+
+
 	router.post('/articlesEdit/:id', (req,res) => {
-        
+
         var category = req.body.category;
 		var subCategory = req.body.subCategory;
 		var nameId = req.body.nameId;
-        var header = req.body.header; 
+        var header = req.body.header;
 		var content = req.body.content;
 		var originalLink = req.body.originalLink;
 		var imageUrl = req.body.imageUrl;
 		var source = req.body.source;
 		var sendDefault = req.body.sendDefault;
-        
+
         articleDetail.editArticle(req.params.id, category, subCategory,nameId, header,content, originalLink, imageUrl, source, sendDefault)
 
 			.then(result => {
@@ -369,19 +381,19 @@ module.exports = router => {
 			})
 
 			.catch(err => res.status(err.status).json({ message: err.message }));
-		
+
     });
-    
+
     router.post('/questionsEdit/:id', (req,res) => {
-        
+
         var category = req.body.category;
 		var subCategory = req.body.subCategory;
 		var nameId = req.body.nameId;
-        var question = req.body.question; 
+        var question = req.body.question;
 		var type = req.body.type;
 		var options = req.body.options;
 		var sendDefault = req.body.sendDefault;
-        
+
         questionDetail.editQuestion(req.params.id, category, subCategory,nameId, question, type, options, sendDefault)
 
 			.then(result => {
@@ -390,19 +402,19 @@ module.exports = router => {
 			})
 
 			.catch(err => res.status(err.status).json({ message: err.message }));
-		
+
     });
-	
-	
+
+
 	router.post('/articles', (req,res) => {
 		const article     =   require("./models/articles");
         var db = new article();
         var response = {};
-        
+
 		db.category = req.body.category;
 		db.subCategory = req.body.subCategory;
 		db.nameId = req.body.nameId;
-        db.header = req.body.header; 
+        db.header = req.body.header;
 		db.content = req.body.content;
 		db.originalLink = req.body.originalLink;
 		db.imageUrl = req.body.imageUrl;
@@ -419,7 +431,7 @@ module.exports = router => {
             res.json(response);
         });
     });
-    
+
     router.post('/userLocation/:id', (req,res) => {
 		const address = req.body.address;
 			const locality = req.body.locality;
@@ -432,7 +444,7 @@ module.exports = router => {
 			.then(result => res.status(result.status).json({ message: result.message }))
 
 			.catch(err => res.status(err.status).json({ message: err.message }));
-		
+
     });
 
     router.get('/questions', (req,res) => {
@@ -449,15 +461,15 @@ module.exports = router => {
                 resp = data;
 				res.json(resp);
             }
-            
+
         });
     });
-	
+
 	router.post('/questions', (req,res) => {
 		const question     =   require("./models/questions");
         var db = new question();
         var response = {};
-        
+
 		db.category = req.body.category;
 		db.subCategory = req.body.subCategory;
 		db.nameId = req.body.nameId;
@@ -476,7 +488,7 @@ module.exports = router => {
             res.json(response);
         });
     });
-    
+
     router.put('/usersQuestion/:id', (req,res) => {
 
 		if (checkToken(req)) {
@@ -491,13 +503,13 @@ module.exports = router => {
 			.then(result => res.status(result.status).json({ message: result.message }))
 
 			.catch(err => res.status(err.status).json({ message: err.message }));
-				
+
 		} else {
 
 			res.status(401).json({ message: 'Invalid Token !' });
 		}
 	});
-    
+
     router.post('/userquestion/:id', (req,res) => {
         const quesId = req.body._id;
 
@@ -505,7 +517,7 @@ module.exports = router => {
             .then(result => res.status(result.status).json({ message: result.message }))
 
 			.catch(err => res.status(err.status).json({ message: err.message }));
-            
+
     });
 
 
@@ -523,20 +535,20 @@ router.put('/usersEvents/:id', (req,res) => {
 			.then(result => res.status(result.status).json({ message: result.message }))
 
 			.catch(err => res.status(err.status).json({ message: err.message }));
-				
+
 	});
 
 router.put('/userAnswers/:id', (req,res) => {
 
 		  const id = req.body.id;
 			const answer = req.body.answer;
-			
+
             userarticles.saveRecycleAnswers(req.params.id, id, answer)
 
 			.then(result => res.status(result.status).json({ message: result.message }))
 
 			.catch(err => res.status(err.status).json({ message: err.message }));
-				
+
 	});
 
 
