@@ -17,6 +17,7 @@ const location = require('./functions/location');
 const articleDetail = require('./functions/article-detail');
 const questionDetail = require('./functions/question-detail');
 const userComment = require('./functions/user-comments');
+const broadcast = require('./functions/broadcast');
 
 module.exports = router => {
 
@@ -30,6 +31,15 @@ module.exports = router => {
 
         console.log(newDate);
         res.end('Welcome to CareBuddy !');
+    });
+
+		router.get('/broadcast', (req,res) => {
+        broadcast.fetchDetails()
+			.then(result => {
+            res.json(result);
+                            })
+			.catch(err => res.status(err.status).json({ message: err.message }));
+
     });
 
     router.post('/userarticle/:id', (req,res) => {
